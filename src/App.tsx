@@ -1,56 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 function App() {
-  const [message, setMessage] = useState([]);
+  const [message, setMessage] = useState<any[]>([]);
   const [regionKeyword, setRegionKeyword] = useState("");
   const [isMultipleRegion, setIsMultipleRegion] = useState(false);
   const [amount, setAmount] = useState(10);
   const [keyword, setKeyword] = useState("");
-  const [startPrice, setStartPrice] = useState(0);
-  const [endPrice, setEndPrice] = useState(0);
+  const [startPrice, setStartPrice] = useState<number | "">("");
+  const [endPrice, setEndPrice] = useState<number | "">("");
 
   const getCrawlingData = () => {
     const body = {
-      "region_keyword": regionKeyword,
-      "is_multiple_region": isMultipleRegion,
-      "keyword": keyword,
-      "amount": amount,
-      "start_price": startPrice,
-      "end_price": endPrice
+      region_keyword: regionKeyword,
+      is_multiple_region: isMultipleRegion,
+      keyword: keyword,
+      amount: amount,
+      start_price: startPrice === "" ? 0 : startPrice,
+      end_price: endPrice === "" ? 0 : endPrice,
     };
 
-    axios.get('http://127.0.0.1:8000/crawl', { params: body })
-      .then(response => {
-        // setMessage(response.data.Hello);
+    axios
+      .get("http://127.0.0.1:8000/crawl", { params: body })
+      .then((response) => {
         setMessage(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("There was an error fetching the data!", error);
       });
   };
-  
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+    const { name, value, checked } = event.target;
+
     switch (name) {
       case "regionKeyword":
         setRegionKeyword(value);
         break;
       case "isMultipleRegion":
-        setIsMultipleRegion(event.target.checked);
+        setIsMultipleRegion(checked); // checkbox는 checked로 처리
         break;
       case "amount":
-        setAmount(parseInt(value));
+        setAmount(value ? parseInt(value) : 0);
         break;
       case "keyword":
         setKeyword(value);
         break;
       case "startPrice":
-        setStartPrice(parseInt(value));
+        setStartPrice(value ? parseInt(value) : ""); // 빈 문자열 허용
         break;
       case "endPrice":
-        setEndPrice(parseInt(value));
+        setEndPrice(value ? parseInt(value) : ""); // 빈 문자열 허용
         break;
       default:
         break;
@@ -79,6 +79,7 @@ function App() {
         name="regionKeyword"
         value={regionKeyword}
         onChange={handleInputChange}
+        placeholder="지역 키워드"
       />
       <input
         type="checkbox"
@@ -97,18 +98,21 @@ function App() {
         name="keyword"
         value={keyword}
         onChange={handleInputChange}
+        placeholder="검색 키워드"
       />
       <input
         type="number"
         name="startPrice"
         value={startPrice}
         onChange={handleInputChange}
+        placeholder="최소 가격"
       />
       <input
         type="number"
         name="endPrice"
         value={endPrice}
         onChange={handleInputChange}
+        placeholder="최대 가격"
       />
       <button onClick={getCrawlingData}>찾기</button>
     </div>
