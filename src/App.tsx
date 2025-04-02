@@ -21,7 +21,7 @@ function App() {
     };
 
     axios
-      .get("http://127.0.0.1:8000/crawl", { params: body })
+      .get("https://port-0-daggncrawlerweb-m8zb10fg23bf6735.sel4.cloudtype.app/crawl", { params: body })
       .then((response) => {
         setMessage(response.data);
       })
